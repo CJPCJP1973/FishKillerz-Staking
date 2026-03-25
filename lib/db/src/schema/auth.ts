@@ -22,6 +22,11 @@ export const usersTable = pgTable("users", {
   username: varchar("username", { length: 30 }).unique(),
   winStreak: integer("win_streak").notNull().default(0),
   bestWinStreak: integer("best_win_streak").notNull().default(0),
+  cashAppTag: varchar("cash_app_tag", { length: 100 }),
+  venmoUsername: varchar("venmo_username", { length: 100 }),
+  chimeHandle: varchar("chime_handle", { length: 100 }),
+  btcAddress: varchar("btc_address", { length: 200 }),
+  lightningAddress: varchar("lightning_address", { length: 500 }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$onUpdate(() => new Date()),
 });

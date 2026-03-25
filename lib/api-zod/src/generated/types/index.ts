@@ -21,6 +21,7 @@ export * from "./listSessionsStatus";
 export * from "./logoutSuccess";
 export * from "./mobileTokenExchangeRequest";
 export * from "./mobileTokenExchangeSuccess";
+export * from "./paymentProfile";
 export * from "./purchaseShareBody";
 export * from "./session";
 export * from "./sessionDetail";

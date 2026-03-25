@@ -12,4 +12,9 @@ export interface UpdateProfileBody {
    * @maxLength 30
    */
   username?: string;
+  cashAppTag?: string;
+  venmoUsername?: string;
+  chimeHandle?: string;
+  btcAddress?: string;
+  lightningAddress?: string;
 }

@@ -147,9 +147,20 @@ router.get("/sessions/:id", async (req: Request, res: Response) => {
       : [];
   const backerMap = Object.fromEntries(backers.map((b) => [b.id, b]));
 
+  const shooterPaymentProfile = shooter
+    ? {
+        cashAppTag: shooter.cashAppTag ?? null,
+        venmoUsername: shooter.venmoUsername ?? null,
+        chimeHandle: shooter.chimeHandle ?? null,
+        btcAddress: shooter.btcAddress ?? null,
+        lightningAddress: shooter.lightningAddress ?? null,
+      }
+    : null;
+
   res.json({
     ...buildSessionResponse(session, shooter),
     shares: shares.map((s) => buildShareResponse(s, s.backerId ? backerMap[s.backerId] : null)),
+    shooterPaymentProfile,
   });
 });
 

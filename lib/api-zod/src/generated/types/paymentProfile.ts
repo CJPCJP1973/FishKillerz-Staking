@@ -6,15 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface UserProfile {
-  id: string;
-  username: string;
-  /** @nullable */
-  email: string | null;
-  /** @nullable */
-  profileImageUrl: string | null;
-  winStreak?: number;
-  createdAt: Date;
+export interface PaymentProfile {
   /** @nullable */
   cashAppTag?: string | null;
   /** @nullable */

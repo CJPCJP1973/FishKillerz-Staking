@@ -189,6 +189,15 @@ export const GetSessionResponse = zod
           createdAt: zod.date(),
         }),
       ),
+      shooterPaymentProfile: zod
+        .object({
+          cashAppTag: zod.string().nullish(),
+          venmoUsername: zod.string().nullish(),
+          chimeHandle: zod.string().nullish(),
+          btcAddress: zod.string().nullish(),
+          lightningAddress: zod.string().nullish(),
+        })
+        .optional(),
     }),
   );
 
@@ -270,6 +279,11 @@ export const GetMyProfileResponse = zod.object({
   profileImageUrl: zod.string().nullable(),
   winStreak: zod.number().optional(),
   createdAt: zod.date(),
+  cashAppTag: zod.string().nullish(),
+  venmoUsername: zod.string().nullish(),
+  chimeHandle: zod.string().nullish(),
+  btcAddress: zod.string().nullish(),
+  lightningAddress: zod.string().nullish(),
 });
 
 /**
@@ -284,6 +298,11 @@ export const UpdateMyProfileBody = zod.object({
     .min(updateMyProfileBodyUsernameMin)
     .max(updateMyProfileBodyUsernameMax)
     .optional(),
+  cashAppTag: zod.string().optional(),
+  venmoUsername: zod.string().optional(),
+  chimeHandle: zod.string().optional(),
+  btcAddress: zod.string().optional(),
+  lightningAddress: zod.string().optional(),
 });
 
 export const UpdateMyProfileResponse = zod.object({
@@ -293,6 +312,11 @@ export const UpdateMyProfileResponse = zod.object({
   profileImageUrl: zod.string().nullable(),
   winStreak: zod.number().optional(),
   createdAt: zod.date(),
+  cashAppTag: zod.string().nullish(),
+  venmoUsername: zod.string().nullish(),
+  chimeHandle: zod.string().nullish(),
+  btcAddress: zod.string().nullish(),
+  lightningAddress: zod.string().nullish(),
 });
 
 /**

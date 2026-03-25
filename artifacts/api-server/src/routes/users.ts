@@ -1,5 +1,5 @@
 import { Router, type IRouter, type Request, type Response } from "express";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { db, usersTable, huntSessionsTable, sharesTable } from "@workspace/db";
 import {
   GetMyProfileResponse,
@@ -19,6 +19,11 @@ function formatProfile(user: typeof usersTable.$inferSelect) {
     profileImageUrl: user.profileImageUrl ?? null,
     winStreak: user.winStreak,
     createdAt: user.createdAt.toISOString(),
+    cashAppTag: user.cashAppTag ?? null,
+    venmoUsername: user.venmoUsername ?? null,
+    chimeHandle: user.chimeHandle ?? null,
+    btcAddress: user.btcAddress ?? null,
+    lightningAddress: user.lightningAddress ?? null,
   };
 }
 
@@ -55,7 +60,17 @@ router.patch("/users/me", async (req: Request, res: Response) => {
   }
 
   const updates: Partial<typeof usersTable.$inferInsert> = {};
-  if (parsed.data.username) updates.username = parsed.data.username;
+  if (parsed.data.username !== undefined) updates.username = parsed.data.username;
+  if (parsed.data.cashAppTag !== undefined) updates.cashAppTag = parsed.data.cashAppTag || null;
+  if (parsed.data.venmoUsername !== undefined) updates.venmoUsername = parsed.data.venmoUsername || null;
+  if (parsed.data.chimeHandle !== undefined) updates.chimeHandle = parsed.data.chimeHandle || null;
+  if (parsed.data.btcAddress !== undefined) updates.btcAddress = parsed.data.btcAddress || null;
+  if (parsed.data.lightningAddress !== undefined) updates.lightningAddress = parsed.data.lightningAddress || null;
+
+  if (Object.keys(updates).length === 0) {
+    res.status(400).json({ error: "No valid fields to update" });
+    return;
+  }
 
   const [updated] = await db
     .update(usersTable)

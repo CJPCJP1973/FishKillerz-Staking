@@ -571,6 +571,8 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/Share'
+            shooterPaymentProfile:
+              $ref: '#/components/schemas/PaymentProfile'
 
     CreateSessionBody:
       type: object
@@ -639,6 +641,20 @@ components:
           minLength: 1
           description: Payment transaction ID/reference
 
+    PaymentProfile:
+      type: object
+      properties:
+        cashAppTag:
+          type: ['string', 'null']
+        venmoUsername:
+          type: ['string', 'null']
+        chimeHandle:
+          type: ['string', 'null']
+        btcAddress:
+          type: ['string', 'null']
+        lightningAddress:
+          type: ['string', 'null']
+
     UserProfile:
       type: object
       required: [id, username, email, profileImageUrl, createdAt]
@@ -656,6 +672,16 @@ components:
         createdAt:
           type: string
           format: date-time
+        cashAppTag:
+          type: ['string', 'null']
+        venmoUsername:
+          type: ['string', 'null']
+        chimeHandle:
+          type: ['string', 'null']
+        btcAddress:
+          type: ['string', 'null']
+        lightningAddress:
+          type: ['string', 'null']
 
     UpdateProfileBody:
       type: object
@@ -664,6 +690,16 @@ components:
           type: string
           minLength: 2
           maxLength: 30
+        cashAppTag:
+          type: string
+        venmoUsername:
+          type: string
+        chimeHandle:
+          type: string
+        btcAddress:
+          type: string
+        lightningAddress:
+          type: string
 
     UserStats:
       type: object

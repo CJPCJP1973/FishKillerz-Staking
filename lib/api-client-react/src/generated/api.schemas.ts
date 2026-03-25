@@ -112,8 +112,22 @@ export interface Share {
   createdAt: string;
 }
 
+export interface PaymentProfile {
+  /** @nullable */
+  cashAppTag?: string | null;
+  /** @nullable */
+  venmoUsername?: string | null;
+  /** @nullable */
+  chimeHandle?: string | null;
+  /** @nullable */
+  btcAddress?: string | null;
+  /** @nullable */
+  lightningAddress?: string | null;
+}
+
 export type SessionDetail = Session & {
   shares: Share[];
+  shooterPaymentProfile?: PaymentProfile;
 };
 
 export interface CreateSessionBody {
@@ -170,6 +184,16 @@ export interface UserProfile {
   profileImageUrl: string | null;
   winStreak?: number;
   createdAt: string;
+  /** @nullable */
+  cashAppTag?: string | null;
+  /** @nullable */
+  venmoUsername?: string | null;
+  /** @nullable */
+  chimeHandle?: string | null;
+  /** @nullable */
+  btcAddress?: string | null;
+  /** @nullable */
+  lightningAddress?: string | null;
 }
 
 export interface UpdateProfileBody {
@@ -178,6 +202,11 @@ export interface UpdateProfileBody {
    * @maxLength 30
    */
   username?: string;
+  cashAppTag?: string;
+  venmoUsername?: string;
+  chimeHandle?: string;
+  btcAddress?: string;
+  lightningAddress?: string;
 }
 
 export interface BackerStats {

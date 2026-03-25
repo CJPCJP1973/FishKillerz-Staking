@@ -5,9 +5,11 @@
  * Deep Sea Hunter - Poker Staking Platform API
  * OpenAPI spec version: 0.1.0
  */
+import type { PaymentProfile } from "./paymentProfile";
 import type { Session } from "./session";
 import type { Share } from "./share";
 
 export type SessionDetail = Session & {
   shares: Share[];
+  shooterPaymentProfile?: PaymentProfile;
 };
