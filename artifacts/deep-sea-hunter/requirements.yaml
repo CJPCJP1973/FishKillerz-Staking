@@ -1,0 +1,24 @@
+packages:
+  "framer-motion": "For page transitions and complex interactive animations"
+  "recharts": "For the interactive 25/75 session pie chart"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility to safely merge Tailwind classes"
+  "date-fns": "For formatting session timestamps"
+  "react-hook-form": "For robust form state management"
+  "@hookform/resolvers": "For Zod schema validation with react-hook-form"
+
+images:
+  - path: "artifacts/deep-sea-hunter/public/images/hero-bg.png"
+    description: "Deep sea underwater dark atmospheric environment with glowing cyan neon geometric elements and subtle gold light shafts, 8k resolution, stylized cyberpunk ocean."
+    aspect_ratio: "16:9"
+  - path: "artifacts/deep-sea-hunter/public/images/avatar-default.png"
+    description: "Stylized neon outline of a deep sea diver helmet with glowing cyan and gold accents on a pure black background."
+    aspect_ratio: "1:1"
+  - path: "artifacts/deep-sea-hunter/public/images/treasure-empty.png"
+    description: "A dark stylized glowing neon sunken treasure chest, minimal vector art style, glowing cyan and gold, pure deep navy background."
+    aspect_ratio: "1:1"
+
+notes:
+  - Using generated hooks from @workspace/api-client-react
+  - Using replit-auth-web for authentication
+  - Base URL is handled by Vite/Wouter, prepend import.meta.env.BASE_URL for absolute paths if needed

@@ -1,9 +1,8 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Deep Sea Hunter - Poker Staking Platform API
 servers:
   - url: /api
     description: Base API path
@@ -12,13 +11,20 @@ tags:
     description: Health operations
   - name: Auth
     description: Browser and mobile authentication endpoints.
+  - name: Sessions
+    description: Hunt session management
+  - name: Shares
+    description: Stake share management
+  - name: Users
+    description: User profile and stats
+  - name: Leaderboard
+    description: Public leaderboard
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -26,6 +32,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
   /auth/user:
     get:
       tags: [Auth]
@@ -50,7 +57,6 @@ paths:
         - name: returnTo
           in: query
           required: false
-          description: Relative path to redirect to after login (must start with `/`). Defaults to `/`.
           schema:
             type: string
       responses:
@@ -80,18 +86,18 @@ paths:
             format: uri
       responses:
         '302':
-          description: Redirect to the `returnTo` path on success (defaults to `/`) or `/api/login` on failure.
+          description: Redirect after login.
   /logout:
     get:
       tags: [Auth]
       operationId: logoutBrowserSession
-      summary: Clear the session and begin OIDC logout
+      summary: Clear session and begin OIDC logout
       parameters:
         - $ref: '#/components/parameters/AuthorizationSessionHeader'
         - $ref: '#/components/parameters/SessionCookie'
       responses:
         '302':
-          description: Redirect to the OIDC provider logout URL.
+          description: Redirect to OIDC logout.
   /mobile-auth/token-exchange:
     post:
       tags: [Auth]
@@ -105,25 +111,25 @@ paths:
               $ref: '#/components/schemas/MobileTokenExchangeRequest'
       responses:
         '200':
-          description: Session created successfully.
+          description: Session created.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/MobileTokenExchangeSuccess'
         '400':
-          description: Missing or invalid required fields.
+          description: Invalid parameters.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '401':
-          description: Token did not contain usable claims.
+          description: Unauthorized.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorEnvelope'
         '500':
-          description: Token exchange failed.
+          description: Exchange failed.
           content:
             application/json:
               schema:
@@ -137,11 +143,296 @@ paths:
         - $ref: '#/components/parameters/AuthorizationSessionHeader'
       responses:
         '200':
-          description: Logout processed.
+          description: Logged out.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/LogoutSuccess'
+
+  /sessions:
+    get:
+      tags: [Sessions]
+      operationId: listSessions
+      summary: List hunt sessions
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [active, completed, cancelled]
+        - name: shooterId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of sessions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Session'
+    post:
+      tags: [Sessions]
+      operationId: createSession
+      summary: Create a new hunt session (shooter only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSessionBody'
+      responses:
+        '201':
+          description: Session created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '400':
+          description: Invalid input.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /sessions/{id}:
+    get:
+      tags: [Sessions]
+      operationId: getSession
+      summary: Get session detail with shares
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Session detail.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionDetail'
+        '404':
+          description: Not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+    patch:
+      tags: [Sessions]
+      operationId: updateSession
+      summary: Update session status or result
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSessionBody'
+      responses:
+        '200':
+          description: Session updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        '400':
+          description: Invalid input.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /sessions/{id}/shares:
+    post:
+      tags: [Shares]
+      operationId: purchaseShare
+      summary: Purchase a share in a session (backer)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PurchaseShareBody'
+      responses:
+        '201':
+          description: Share purchase pending.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Share'
+        '400':
+          description: Invalid input.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '409':
+          description: No shares available.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /shares/{id}/confirm:
+    patch:
+      tags: [Shares]
+      operationId: confirmShare
+      summary: Confirm a share payment (shooter confirms)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Share confirmed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Share'
+        '401':
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '404':
+          description: Not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /users/me:
+    get:
+      tags: [Users]
+      operationId: getMyProfile
+      summary: Get current user profile
+      responses:
+        '200':
+          description: User profile.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+    patch:
+      tags: [Users]
+      operationId: updateMyProfile
+      summary: Update current user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileBody'
+      responses:
+        '200':
+          description: Profile updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: Invalid input.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+        '401':
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /users/me/stats:
+    get:
+      tags: [Users]
+      operationId: getMyStats
+      summary: Get current user backer and shooter stats
+      responses:
+        '200':
+          description: User stats.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserStats'
+        '401':
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+
+  /leaderboard:
+    get:
+      tags: [Leaderboard]
+      operationId: getLeaderboard
+      summary: Get top hunters by win streak
+      responses:
+        '200':
+          description: Leaderboard entries.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaderboardEntry'
+
 components:
   parameters:
     AuthorizationSessionHeader:
@@ -166,6 +457,14 @@ components:
           type: string
       required:
         - status
+
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+
     AuthUser:
       type: object
       required: [id, email, firstName, lastName, profileImageUrl]
@@ -222,9 +521,198 @@ components:
         success:
           type: boolean
           const: true
-    ErrorEnvelope:
+
+    Session:
       type: object
-      required: [error]
+      required: [id, shooterId, shooterUsername, gameName, buyInUsd, sharePercent, totalShares, soldShares, status, createdAt]
       properties:
-        error:
+        id:
           type: string
+        shooterId:
+          type: string
+        shooterUsername:
+          type: string
+        gameName:
+          type: string
+        buyInUsd:
+          type: number
+        sharePercent:
+          type: number
+          description: Percentage per share (e.g. 5 means each share is 5% of 75%)
+        totalShares:
+          type: integer
+          description: Total number of available shares (always 75% / sharePercent)
+        soldShares:
+          type: integer
+          description: Number of confirmed sold shares
+        status:
+          type: string
+          enum: [active, completed, cancelled]
+        result:
+          type: ['string', 'null']
+          description: win or loss
+        profitUsd:
+          type: ['number', 'null']
+          description: Net profit/loss for the session
+        createdAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: ['string', 'null']
+          format: date-time
+
+    SessionDetail:
+      allOf:
+        - $ref: '#/components/schemas/Session'
+        - type: object
+          required: [shares]
+          properties:
+            shares:
+              type: array
+              items:
+                $ref: '#/components/schemas/Share'
+
+    CreateSessionBody:
+      type: object
+      required: [gameName, buyInUsd, sharePercent]
+      properties:
+        gameName:
+          type: string
+          minLength: 1
+        buyInUsd:
+          type: number
+          minimum: 1
+        sharePercent:
+          type: number
+          minimum: 1
+          maximum: 75
+          description: Percentage per share of the 75% backer pool
+
+    UpdateSessionBody:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [active, completed, cancelled]
+        result:
+          type: string
+          enum: [win, loss]
+        profitUsd:
+          type: number
+
+    Share:
+      type: object
+      required: [id, sessionId, slotIndex, sharePercent, priceUsd, status, createdAt]
+      properties:
+        id:
+          type: string
+        sessionId:
+          type: string
+        slotIndex:
+          type: integer
+          description: Which slot in the pie (0-indexed)
+        backerId:
+          type: ['string', 'null']
+        backerUsername:
+          type: ['string', 'null']
+        sharePercent:
+          type: number
+        priceUsd:
+          type: number
+        status:
+          type: string
+          enum: [available, pending, confirmed]
+        txId:
+          type: ['string', 'null']
+        createdAt:
+          type: string
+          format: date-time
+
+    PurchaseShareBody:
+      type: object
+      required: [slotIndex, txId]
+      properties:
+        slotIndex:
+          type: integer
+        txId:
+          type: string
+          minLength: 1
+          description: Payment transaction ID/reference
+
+    UserProfile:
+      type: object
+      required: [id, username, email, profileImageUrl, createdAt]
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: ['string', 'null']
+        profileImageUrl:
+          type: ['string', 'null']
+        winStreak:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    UpdateProfileBody:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 2
+          maxLength: 30
+
+    UserStats:
+      type: object
+      required: [backerStats, shooterStats]
+      properties:
+        backerStats:
+          $ref: '#/components/schemas/BackerStats'
+        shooterStats:
+          $ref: '#/components/schemas/ShooterStats'
+
+    BackerStats:
+      type: object
+      required: [totalInvestedUsd, totalWonUsd, activeShares]
+      properties:
+        totalInvestedUsd:
+          type: number
+        totalWonUsd:
+          type: number
+        activeShares:
+          type: integer
+
+    ShooterStats:
+      type: object
+      required: [totalSessions, wins, losses, winStreak, bestWinStreak]
+      properties:
+        totalSessions:
+          type: integer
+        wins:
+          type: integer
+        losses:
+          type: integer
+        winStreak:
+          type: integer
+        bestWinStreak:
+          type: integer
+
+    LeaderboardEntry:
+      type: object
+      required: [userId, username, profileImageUrl, winStreak, totalWins, totalSessions]
+      properties:
+        userId:
+          type: string
+        username:
+          type: string
+        profileImageUrl:
+          type: ['string', 'null']
+        winStreak:
+          type: integer
+        totalWins:
+          type: integer
+        totalSessions:
+          type: integer
