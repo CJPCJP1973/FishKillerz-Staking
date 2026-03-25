@@ -48,6 +48,21 @@ Every package extends `tsconfig.base.json` which sets `composite: true`. The roo
 - `pnpm run build` — runs `typecheck` first, then recursively runs `build` in all packages that define it
 - `pnpm run typecheck` — runs `tsc --build --emitDeclarationOnly` using project references
 
+## Authentication
+
+Replit Auth (OpenID Connect with PKCE) is integrated. Sessions are stored in PostgreSQL.
+
+- **`lib/db/src/schema/auth.ts`** — `sessions` and `users` tables (mandatory, do not drop)
+- **`artifacts/api-server/src/lib/auth.ts`** — session CRUD, OIDC config
+- **`artifacts/api-server/src/middlewares/authMiddleware.ts`** — loads user from session on every request
+- **`artifacts/api-server/src/routes/auth.ts`** — `/auth/user`, `/login`, `/callback`, `/logout`, `/mobile-auth/*`
+- **`lib/replit-auth-web`** — `useAuth()` React hook for browser auth state
+
+Web auth flow: browser navigates to `GET /api/login?returnTo=<base>` → OIDC → `/api/callback` → session cookie set → redirect.
+
+Use `req.isAuthenticated()` in Express routes to guard protected endpoints.
+Use `useAuth()` from `@workspace/replit-auth-web` in React components — never use the generated API client for auth.
+
 ## Packages
 
 ### `artifacts/api-server` (`@workspace/api-server`)

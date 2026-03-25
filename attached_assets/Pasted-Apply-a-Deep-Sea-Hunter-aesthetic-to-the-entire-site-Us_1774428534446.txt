@@ -1,0 +1,15 @@
+Apply a 'Deep Sea Hunter' aesthetic to the entire site. Use a dark mode palette: Deep Navy (#020617), Cyan accents (#22d3ee), and Gold highlights (#fbbf24). Use Lucide icons. On the homepage, create a 'Live Hunt' feed showing active sessions with a progress bar indicating how much of the 75% stake is filled."
+"Create two distinct user views. The Backer View: show a summary of 'Total Invested' and 'Total Won.' The Shooter View: show their 'Win/Loss Ratio' and a list of their past sessions. Add a public leaderboard showing the 'Top Hunters' based on verified win streaks to build trust and competition."
+"Add a visual Pie Chart to the Session Detail page that represents the total buy-in.
+• ​The 25% Slice: Always lock 25% of the pie as 'Shooter Skin in the Game' (use a distinct color like Gold or Dark Grey).
+• ​Individual Shares: Divide the remaining 75% into individual slices based on the 'Share Size' (e.g., if a share is 5%, show 15 equal slices).
+• ​Dynamic Colors: >    - Available Shares: Color these Green and display the price ($) inside the slice. 
+• ​Sold Shares: When a backer purchases a share and it is confirmed, change that specific slice to Red and label it 'SOLD'.
+• ​Interactivity: When a user hovers over a Green slice, show a 'Buy Now' tooltip.
+• ​Real-time Update: Ensure the chart updates instantly as soon as a stake is confirmed in the database."
+"Use Recharts or Tremor.so for the pie chart—they are clean, responsive, and work perfectly with Tailwind CSS."
+"Create the 'Buy Now' logic for the Pie Chart.
+• ​Trigger: When a user clicks an available Green Slice, open a side-drawer or modal titled 'Secure Your Stake.'
+• ​Transaction Details: Show the Share Price, the Game (e.g., Golden Dragon), and the Shooter's Name.
+• ​Payment Instructions: Display my manual payment info (CashApp/Venmo/Chime handles,BTC,Bitcoin Lightning).
+• ​Confirmation Field: Add a text input where the user must paste Refactor the user system. Everyone signs up as a standard User with a unique username.
