@@ -152,6 +152,7 @@ overrides:
   rollup>@rollup/rollup-win32-ia32-msvc: '-'
   rollup>@rollup/rollup-win32-x64-gnu: '-'
   rollup>@rollup/rollup-win32-x64-msvc: '-'
+  pino@<=10.1.1: 10.1.1
 
 importers:
 
@@ -188,7 +189,7 @@ importers:
         specifier: ^6.8.2
         version: 6.8.2
       pino:
-        specifier: ^10.1.1
+        specifier: 10.1.1
         version: 10.1.1
       pino-http:
         specifier: ^11.0.0
@@ -2131,7 +2132,7 @@ packages:
     resolution: {integrity: sha512-5RIsILwgqy8wIV5pVg2gb13gJlH3EKKg613Js8q25p3tFsKA8ftsgWQFdgGbIkUe77Ttjl8lctuGkchRAvXGfw==}
     peerDependencies:
       esbuild: 0.27.3
-      pino: '>=7.0.0'
+      pino: 10.1.1
       pino-pretty: '*'
       thread-stream: '*'
     peerDependenciesMeta:
